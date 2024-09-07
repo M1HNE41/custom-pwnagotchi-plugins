@@ -81,8 +81,11 @@ class RemoteCracking(plugins.Plugin):
     #     return response
 
     def on_internet_available(self, agent):
+        logging.warning("[RemoteCracking] on_internet_available")
+        logging.warning(f"[RemoteCracking] {self.ready}, {self.lock.locked()}")
         if not self.ready or self.lock.locked():
             return
+        logging.warning("[RemoteCracking] passed it")
 
         with self.lock:
             config = agent.config()
@@ -92,7 +95,9 @@ class RemoteCracking(plugins.Plugin):
             handshake_filenames = os.listdir(handshake_dir)
             handshake_paths = [os.path.join(handshake_dir, filename) for filename in handshake_filenames if
                                filename.endswith(".22000")]
+            logging.warning(f"[RemoteCracking] 1: {handshake_paths}")
             handshake_paths = remove_whitelisted(handshake_paths, self.options["whitelist"])
+            logging.warning("[RemoteCracking] 2: {handshake_paths}")
             handshake_new = set(handshake_paths) - set(reported) - set(self.skip)
             ftps = FTP_TLS()
             ftps.connect(self.ftp_server, self.ftp_port)
